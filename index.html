@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>Projeto Supermercado - POO</title>
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: #00ccff;
+        text-align: center;
+    }
+
+    .container {
+        background: rgb(255, 255, 255);
+        width: 80%;
+        margin: 20px auto;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px #ff0000;
+    }
+
+    input {
+        padding: 8px;
+        margin: 5px;
+    }
+
+    button {
+        padding: 8px 15px;
+        margin: 10px;
+        cursor: pointer;
+    }
+
+    h2 {
+        background: #2e7d32;
+        color: white;
+        padding: 10px;
+        border-radius: 5px;
+    }
+
+    .lista {
+        text-align: left;
+        margin-top: 15px;
+    }
+
+    /* Estilo para o botão de excluir */
+    .btn-excluir {
+        background-color: #ff4d4d;
+        color: white;
+        border: none;
+        padding: 4px 8px;
+        margin-left: 10px;
+        border-radius: 3px;
+        font-size: 12px;
+    }
+    
+    .btn-excluir:hover {
+        background-color: #cc0000;
+    }
+
+    .item-produto {
+        margin-bottom: 10px;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 5px;
+    }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+    <h2>Cadastro de Produto (POO)</h2>
+
+    <input type="text" id="nomeProduto" placeholder="Nome do Produto">
+    <input type="text" id="categoriaProduto" placeholder="Categoria">
+    <input type="number" id="precoProduto" placeholder="Preço">
+    <input type="number" id="estoqueProduto" placeholder="Estoque">
+    <br>
+    <button onclick="app.cadastrarProduto()">Cadastrar Produto</button>
+
+    <div class="lista" id="listaProdutos"></div>
+</div>
+
+<script>
+// =======================
+// CLASSE PRODUTO
+// =======================
+class Produto {
+    constructor(id, nome, categoria, preco, estoque) {
+        this.id = id;
+        this.nome = nome;
+        this.categoria = categoria;
+        this.preco = parseFloat(preco) || 0;
+        this.estoque = parseInt(estoque) || 0;
+    }
+}
+
+// =======================
+// CLASSE GERENCIADOR
+// =======================
+class GerenciadorProdutos {
+    constructor() {
+        this.produtos = [];
+        this.carregarDadosIniciais();
+        this.renderizarLista();
+    }
+
+    carregarDadosIniciais() {
+        const dadosJSON = [
+            {"id":1,"nome":"Bloco de contato auxiliar","categoria":"Eletronico","preco":25,"estoque":50},
+            {"id":2,"nome":"Contator industrial","categoria":"Eletronico","preco":8,"estoque":80},
+            {"id":3,"nome":"Contator de potencia tripolar","categoria":"Eletronico","preco":4,"estoque":120},
+            {"id":4,"nome":"Gabinete","categoria":"Eletronico","preco":7,"estoque":60},
+            {"id":5,"nome":"Painel elétrico industrial","categoria":"Eletronico","preco":5,"estoque":70},
+            {"id":6,"nome":"Multímetro digital portátil","categoria":"Eletronico","preco":2,"estoque":90},
+            {"id":7,"nome":"Autotransformador variável","categoria":"Eletronico","preco":4,"estoque":100},
+            {"id":8,"nome":"Banco de resistores","categoria":"Eletronico","preco":9,"estoque":40},
+            {"id":9,"nome":"Transformador","categoria":"Eletronico","preco":39,"estoque":30},
+            {"id":10,"nome":"Fonte de alimentação chaveada","categoria":"Eletronico","preco":29,"estoque":35},
+            {"id":11,"nome":"Fonte de alimentação para uso escolar","categoria":"Eletronico","preco":8,"estoque":75},
+            {"id":12,"nome":"Transformador de tensão elétrica","categoria":"Eletronico","preco":6,"estoque":65},
+            {"id":13,"nome":"Motor elétrico trifásico","categoria":"Eletronico","preco":14,"estoque":55},
+            {"id":14,"nome":"Induzido de motor de partido","categoria":"Eletronico","preco":3,"estoque":110},
+            {"id":15,"nome":"Autotransformador","categoria":"Eletronico","preco":100,"estoque":45}
+        ];
+
+        // Instancia cada objeto do JSON como um objeto da classe Produto
+        this.produtos = dadosJSON.map(p => new Produto(p.id, p.nome, p.categoria, p.preco, p.estoque));
+    }
+
+    cadastrarProduto() {
+        const inputNome = document.getElementById("nomeProduto");
+        const inputCategoria = document.getElementById("categoriaProduto");
+        const inputPreco = document.getElementById("precoProduto");
+        const inputEstoque = document.getElementById("estoqueProduto");
+
+        if (inputNome.value.trim() === "") {
+            return alert("Digite o nome do produto!");
+        }
+
+        // Cria a nova instância de Produto
+        const novoProduto = new Produto(
+            Date.now(), // ID único
+            inputNome.value,
+            inputCategoria.value,
+            inputPreco.value,
+            inputEstoque.value
+        );
+
+        this.produtos.push(novoProduto);
+        this.renderizarLista();
+        this.limparCampos([inputNome, inputCategoria, inputPreco, inputEstoque]);
+        
+        alert("Produto cadastrado com sucesso!");
+    }
+
+    excluirProduto(idParaRemover) {
+        if (confirm("Tem certeza que deseja excluir este produto?")) {
+            this.produtos = this.produtos.filter(p => p.id !== idParaRemover);
+            this.renderizarLista();
+        }
+    }
+
+    limparCampos(campos) {
+        campos.forEach(campo => campo.value = "");
+    }
+
+    renderizarLista() {
+        const containerLista = document.getElementById("listaProdutos");
+        let textoHTML = "<h3>Lista de Produtos:</h3>";
+        
+        this.produtos.forEach(p => {
+            textoHTML += `
+                <div class="item-produto">
+                    ID: ${p.id} | <strong>${p.nome}</strong> | R$ ${p.preco.toFixed(2)} | Estoque: ${p.estoque}
+                    <button class="btn-excluir" onclick="app.excluirProduto(${p.id})">Excluir</button>
+                </div>
+            `;
+        });
+        
+        containerLista.innerHTML = textoHTML;
+    }
+}
+
+// =======================
+// INICIALIZAÇÃO DA APLICAÇÃO
+// =======================
+// Criamos a instância global 'app' que irá gerenciar tudo
+const app = new GerenciadorProdutos();
+
+</script>
+</body>
+</html>
