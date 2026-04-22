@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>Acesso - Projeto Supermercado</title>
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: #00ccff;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+    }
+
+    .container {
+        background: rgb(255, 255, 255);
+        width: 100%;
+        max-width: 350px;
+        padding: 30px 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px #ff0000;
+        box-sizing: border-box;
+        text-align: center;
+    }
+
+    input {
+        width: 90%;
+        padding: 10px;
+        margin: 10px 0;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        box-sizing: border-box;
+    }
+
+    button {
+        padding: 10px 15px;
+        margin-top: 15px;
+        cursor: pointer;
+        background-color: #2e7d32;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        width: 90%;
+        font-size: 16px;
+        font-weight: bold;
+    }
+
+    button:hover {
+        background-color: #1b5e20;
+    }
+
+    h2 {
+        background: #2e7d32;
+        color: white;
+        padding: 10px;
+        border-radius: 5px;
+        margin-top: 0;
+        margin-bottom: 20px;
+    }
+
+    .link-alternar {
+        display: block;
+        margin-top: 15px;
+        color: #005580;
+        text-decoration: underline;
+        cursor: pointer;
+        font-size: 14px;
+    }
+
+    .link-alternar:hover {
+        color: #00334d;
+    }
+
+    /* Classe para esconder a tela que não está sendo usada */
+    .escondido {
+        display: none;
+    }
+</style>
+</head>
+
+<body>
+
+<div class="container" id="telaLogin">
+    <h2>Acesso ao Sistema</h2>
+    <input type="text" id="usuarioLogin" placeholder="Usuário">
+    <input type="password" id="senhaLogin" placeholder="Senha">
+    <button onclick="fazerLogin()">Entrar</button>
+    <span class="link-alternar" onclick="alternarTelas()">Não tem conta? Cadastre-se</span>
+</div>
+
+<div class="container escondido" id="telaCadastro">
+    <h2>Novo Cadastro</h2>
+    <input type="text" id="usuarioCadastro" placeholder="Crie um Usuário">
+    <input type="password" id="senhaCadastro" placeholder="Crie uma Senha">
+    <button onclick="fazerCadastro()">Criar Conta</button>
+    <span class="link-alternar" onclick="alternarTelas()">Já tem conta? Faça Login</span>
+</div>
+
+<script>
+// ==========================================
+// LÓGICA DE ALTERNÂNCIA E AUTENTICAÇÃO FALSA
+// ==========================================
+
+function alternarTelas() {
+    const telaLogin = document.getElementById("telaLogin");
+    const telaCadastro = document.getElementById("telaCadastro");
+
+    // Alterna a classe 'escondido' entre as divs
+    telaLogin.classList.toggle("escondido");
+    telaCadastro.classList.toggle("escondido");
+}
+
+function fazerCadastro() {
+    const usuarioNovo = document.getElementById("usuarioCadastro").value;
+    const senhaNova = document.getElementById("senhaCadastro").value;
+
+    if (usuarioNovo.trim() === "" || senhaNova.trim() === "") {
+        return alert("Preencha todos os campos para cadastrar!");
+    }
+
+    // Salva os dados no navegador (simulando um banco de dados)
+    localStorage.setItem("usuarioFalso", usuarioNovo);
+    localStorage.setItem("senhaFalsa", senhaNova);
+
+    alert("Conta criada com sucesso! Agora você pode fazer login.");
+    
+    // Limpa os campos de cadastro
+    document.getElementById("usuarioCadastro").value = "";
+    document.getElementById("senhaCadastro").value = "";
+
+    // Volta para a tela de login
+    alternarTelas();
+}
+
+function fazerLogin() {
+    const usuarioDigitado = document.getElementById("usuarioLogin").value;
+    const senhaDigitada = document.getElementById("senhaLogin").value;
+
+    // Busca os dados que foram salvos no cadastro
+    const usuarioSalvo = localStorage.getItem("usuarioFalso");
+    const senhaSalva = localStorage.getItem("senhaFalsa");
+
+    // Verifica se os dados batem
+    if (usuarioDigitado === usuarioSalvo && senhaDigitada === senhaSalva) {
+        alert("Acesso permitido! Redirecionando...");
+        
+        // REDIRECIONAMENTO: Certifique-se de que o nome do arquivo principal está correto aqui
+        window.location.href = "index.html"; 
+    } else {
+        alert("Usuário ou senha incorretos! (Ou você ainda não criou uma conta)");
+    }
+}
+</script>
+
+</body>
+</html>
